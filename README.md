@@ -1,4 +1,4 @@
-# R-Trees
+# R-trees
 
-Collection of scripts and methods for building tree diagrams in R.
+Collection of scripts, functions, methods for building tree diagrams in R.
 
