@@ -1,5 +1,6 @@
 # function to write out phylo obj to newick 
 # from here http://blog.phytools.org/2011/07/writing-phylo-object-to-newick-string.html 
+# written by Liam Revell
 
 writeTree<-function(tree){
   tree<-reorder.phylo(tree,"cladewise")
