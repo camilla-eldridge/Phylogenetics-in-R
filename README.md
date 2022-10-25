@@ -16,3 +16,9 @@ Tips and Notes:
 
 If a tree is hard to read, transform the edge lengths by sqrt (this keeps relative lengths whilst making nodes easier to see)
 tree$edge.length <- sqrt(tree$edge.length)
+
+
+Phangorn tutorial:
+
+        https://cran.r-project.org/web/packages/phangorn/vignettes/Trees.html#molecular-dating-with-a-strict-clock-for-ultrametric-and-tipdated-phylogenies
+
