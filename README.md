@@ -6,8 +6,8 @@ Collection of scripts, functions, methods for building and analysing tree diagra
 * UPGMA
 * NJ
 * Ultrametric and binary tests
-* Tree shape metrics 
-
+* Tree shape metrics
+* Relative rate heatmap
 
 
 
