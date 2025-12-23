@@ -1,0 +1,67 @@
+# Load necessary libraries
+library(ape)         # For sequence data handling (if using sequence alignment like 'woodmouse')
+library(gplots)      # For heatmap visualization
+library(ggplot2)
+library(pegas)
+
+# test all pairs in sequence alignment
+radix_cox1  <- read.dna("test.fasta", format="fasta")
+
+# Get the sequence names (IDs) from the alignment as row names
+seq_names <- rownames(radix_cox1)
+
+# Define the outgroup (assuming the first row as the outgroup)
+outgroup <- radix_cox1 [1, ]
+n <- nrow(radix_cox1 )
+
+# Generate all pairwise combinations of rows (2:n) for comparison
+cc <- combn(2:n, 2)
+
+# compute the pairwise rate using `rr.test`
+FUN <- function(x) {
+  rr.test(radix_cox1 [x[1], ], radix_cox1 [x[2], ], outgroup)$Pval  
+}
+
+# Apply the function over all pairwise combinations
+OUT <- apply(cc, 2, FUN)
+
+# Create a matrix to store results
+RES <- matrix(NA, n - 1, n - 1)
+RES[row(RES) > col(RES)] <- OUT
+RES <- t(RES)
+RES[row(RES) > col(RES)] <- OUT
+RES <- t(RES)
+
+# Use the sequence labels (excluding the outgroup) as row and column names
+dimnames(RES) <- list(seq_names[2:n], seq_names[2:n])
+
+
+library(reshape2) 
+# Melt the matrix to long format for ggplot
+RES_melted <- melt(as.matrix(RES), varnames = c("Row", "Column"), value.name = "p_value")
+
+
+# Create a new column for categories based on p-values
+RES_melted$category <- cut(RES_melted$p_value,
+                           breaks = c(-Inf, 0.01, 0.05, Inf),
+                           labels = c("<0.01", "0.01-0.05", ">=0.05"))
+
+# Define colors for each category
+colors <- c("purple", "violet", "#ffecf2")
+
+# Create the heatmap using ggplot2
+ggplot(data = RES_melted, aes(x = Column, y = Row, fill = category)) +  # Use the category column
+  geom_tile() +
+  scale_fill_manual(values = colors, name = "P-Value", na.value = "white", 
+                    labels = c("<0.01", "0.01-0.05", ">=0.05", "")) +
+  theme_minimal() + 
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, size = 7, colour = "black"),  # Slanted x-axis text
+    axis.text.y = element_text(size = 7, color = "black")  # Smaller y-axis text
+  ) + 
+  labs(
+    x = "",
+    y = ""
+  )
+
+ggsave("heatmap_radixcox1_tajimatest.png", width = 35, height = 30, units = "cm", device = "png")
